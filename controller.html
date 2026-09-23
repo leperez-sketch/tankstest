@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Chicken Horde — Controller</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="controller">
+<div class="controller-top">
+  <div><span class="mini-chick">🐥</span> CHICKEN HORDE</div>
+  <span id="net">CONNECTING</span>
+</div>
+<section id="join">
+  <h1>JOIN THE FARM</h1>
+  <p>Choose your chicken name.</p>
+  <input id="name" maxlength="12" placeholder="YOUR NAME" autocomplete="off">
+  <button id="joinBtn">JOIN GAME</button>
+  <p id="joinMsg" class="muted"></p>
+</section>
+
+<section id="controls" hidden>
+  <div class="player-label" id="playerLabel">🐥 PLAYER</div>
+  <div id="stick" class="stick">
+    <div class="stick-ring"></div>
+    <div id="knob" class="knob"></div>
+  </div>
+  <button id="fire" class="fire">FIRE</button>
+  <div class="control-help">MOVE • AIM IS AUTOMATIC • HOLD FIRE</div>
+</section>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="controller.js"></script>
+</body>
+</html>
