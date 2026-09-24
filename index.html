@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Chicken Horde — Host</title>
+<title>Chicken Horde V2 — Golden Egg Defense</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="host">
 <div id="hud">
-  <div class="brand"><span>🐔</span> CHICKEN HORDE</div>
+  <div class="brand"><span>🐔</span> CHICKEN HORDE <em>V2</em></div>
   <div class="hud-card"><small>WAVE</small><b id="wave">1</b></div>
   <div class="hud-card"><small>FARM</small><div class="bar"><i id="farmBar"></i></div></div>
+  <div class="hud-card"><small>EGGS</small><b id="eggCount">3</b></div>
   <div class="hud-card"><small>ENEMIES</small><b id="enemyCount">0</b></div>
   <div class="hud-card"><small>PLAYERS</small><b id="playerCount">0</b></div>
   <button id="startBtn">START WAVE</button>
@@ -21,35 +22,37 @@
 
 <div id="lobby" class="overlay">
   <div class="panel">
-    <div class="title">🐔 CHICKEN HORDE</div>
-    <p class="subtitle">Golden Egg Defense • cooperative classroom prototype</p>
+    <div class="title">🐔 CHICKEN HORDE <span>V2</span></div>
+    <p class="subtitle">GOLDEN EGG DEFENSE • CO-OP CLASSROOM PROTOTYPE</p>
     <div class="lobby-grid">
       <div>
         <h3>SCAN TO PLAY</h3>
         <div id="qr" class="qr"></div>
         <div class="room-code" id="roomCode">ROOM ----</div>
-        <p class="muted">Open the QR on each phone, enter a name and join.</p>
+        <p class="muted">Each phone gets a chicken. Use the <strong>left stick to move</strong> and the <strong>right stick to aim</strong>.</p>
       </div>
       <div class="rules">
-        <h3>MISSION</h3>
-        <p>Protect <strong>Momma Hen</strong> and the golden eggs from the predator horde.</p>
+        <h3>V2 CHANGES</h3>
         <ul>
-          <li>🕹️ Phone = movement joystick</li>
-          <li>🔴 Phone = automatic aim + fire button</li>
-          <li>🦊 Foxes chase players</li>
-          <li>🐺 Wolves are tougher</li>
-          <li>🦅 Hawks dive through fences</li>
-          <li>🎥 Camera zooms to keep players visible</li>
+          <li>🎯 Twin-stick mobile controls: independent movement + aiming</li>
+          <li>🐔 Momma Hen moved to the <strong>bottom defensive zone</strong></li>
+          <li>⬇️ Predator waves enter from the top</li>
+          <li>🚨 Enemy warning markers appear before attacks</li>
+          <li>🔥 Heat/rapid-fire feedback and stronger impact FX</li>
+          <li>💰 Golden pickups + combo scoring</li>
+          <li>👑 Elite predators and a boss wave every 5 rounds</li>
+          <li>🌅 More depth in the farm: roads, fields, fences, trees and coop</li>
         </ul>
-        <div class="tip">Desktop keyboard fallback: WASD / arrows + SPACE.</div>
+        <div class="tip">PC fallback: WASD / arrows move • mouse aims • hold SPACE to fire.</div>
       </div>
     </div>
-    <div id="connectionStatus" class="status">Connecting room…</div>
+    <div id="connectionStatus" class="status">Creating room…</div>
   </div>
 </div>
 
 <div id="waveBanner" class="wave-banner"></div>
 <div id="toast"></div>
+<div id="controlsHint">MOUSE AIM • SPACE FIRE</div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>

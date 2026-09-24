@@ -1,8 +1,8 @@
 {
   "name": "Chicken Horde \u2014 Golden Egg Defense",
-  "version": "0.1.0-prototype",
+  "version": "0.2.0-prototype",
   "platform": "GitHub Pages",
   "network": "PeerJS/WebRTC",
-  "controls": "mobile joystick + fire; host keyboard fallback",
-  "frame_art": "procedural canvas prototype"
+  "controls": "mobile twin-stick + fire; host WASD/arrows + mouse + space",
+  "gameplay": "bottom coop defense / top predator waves"
 }
