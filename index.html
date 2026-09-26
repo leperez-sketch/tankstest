@@ -1,62 +1,27 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Chicken Horde V3.1 — Golden Egg Defense</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#172c2b"><title>Chicken Horde V4</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="host">
-<div id="hud">
-  <div class="brand"><span>🐔</span> CHICKEN HORDE <em>V3.1</em></div>
-  <div class="hud-card"><small>WAVE</small><b id="wave">1</b></div>
-  <div class="hud-card"><small>FARM</small><div class="bar"><i id="farmBar"></i></div></div>
-  <div class="hud-card"><small>EGGS</small><b id="eggCount">3</b></div>
-  <div class="hud-card"><small>ENEMIES</small><b id="enemyCount">0</b></div>
-  <div class="hud-card"><small>PLAYERS</small><b id="playerCount">0</b></div>
-  <button id="startBtn">START WAVE</button>
-  <button id="pauseBtn" class="secondary">PAUSE</button>
-</div>
-
-<canvas id="game" aria-label="Chicken Horde game"></canvas>
-
-<div id="lobby" class="overlay">
-  <div class="panel">
-    <div class="title">🐔 CHICKEN HORDE <span>V2</span></div>
-    <p class="subtitle">GOLDEN EGG DEFENSE • CO-OP CLASSROOM PROTOTYPE</p>
-    <div class="lobby-grid">
-      <div>
-        <h3>SCAN TO PLAY</h3>
-        <div id="qr" class="qr"></div>
-        <div class="room-code" id="roomCode">ROOM ----</div>
-        <p class="muted">Each phone gets a chicken. <strong>ONE STICK = MOVE + AIM</strong>. Hold FIRE to shoot.</p>
-      </div>
-      <div class="rules">
-        <h3>V3.1 CHANGES</h3>
-        <ul>
-          <li>🎮 Simple one-stick control: movement and firing direction stay together</li>
-          <li>🐔 Momma Hen moved to the <strong>bottom defensive zone</strong></li>
-          <li>⬇️ Predator waves enter from the top</li>
-          <li>🚨 Enemy warning markers appear before attacks</li>
-          <li>🔥 Recoil, muzzle flash, hit flash and animated movement</li>
-          <li>🏷️ Player identity: colored badge + persistent nameplate + HP bar</li>
-          <li>💰 Golden pickups + combo scoring</li>
-          <li>👑 Elite predators and a boss wave every 5 rounds</li>
-          <li>🌅 More depth in the farm: roads, fields, fences, trees and coop</li>
-        </ul>
-        <div class="tip">PC fallback: WASD / arrows move • mouse aims • hold SPACE to fire.</div>
-      </div>
-    </div>
-    <div id="connectionStatus" class="status">Creating room…</div>
-  </div>
-</div>
-
-<div id="waveBanner" class="wave-banner"></div>
-<div id="toast"></div>
-<div id="controlsHint">MOUSE AIM • SPACE FIRE</div>
-
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="game.js"></script>
-</body>
-</html>
+<body>
+  <main id="host" class="screen hidden">
+    <header class="hud"><div class="brand">🐥 CHICKEN HORDE <small>FARM DEFENSE</small></div><div class="stats"><span>WAVE <b id="wave">0</b></span><span>FARM <b id="farmHp">100%</b></span><span>PLAYERS <b id="playerCount">0</b></span></div><button id="startBtn" class="start">START GAME</button></header>
+    <canvas id="game"></canvas>
+    <section id="lobby" class="lobby"><div class="lobby-card"><div class="eyebrow">ROOM IS OPEN</div><h1>Gather the flock</h1><p>Players can join at any time. The match starts only when you choose.</p><div id="roomCode" class="room-code">Connecting…</div><img id="qr" alt="QR code to join this lobby"><div id="joinUrl" class="join-url"></div><div id="roster" class="roster"></div><div class="lobby-note">This lobby stays open until you press <b>START GAME</b>.</div></div></section>
+    <div id="toast" class="toast"></div>
+  </main>
+  <main id="controller" class="screen controller hidden">
+    <header class="controller-head"><div class="brand">🐥 CHICKEN HORDE</div><div id="connection" class="connection">CONNECTING</div></header>
+    <section id="joinPanel" class="join-panel"><div class="eyebrow">FARM DEFENSE</div><h1>Join the flock</h1><label>Your name<input id="playerName" maxlength="12" placeholder="e.g. LEO" autocomplete="nickname"></label><button id="joinBtn" class="start join-button">JOIN GAME</button><div id="joinStatus" class="join-status">Waiting for the host…</div></section>
+    <section id="controls" class="controls hidden">
+      <div class="control-help"><span>MOVE</span><span>AIM</span></div>
+      <div class="sticks"><div class="stick-zone" id="moveZone"><span class="stick-label">MOVE</span><div class="stick-base"><div class="stick-knob"></div></div></div><div class="stick-zone" id="aimZone"><span class="stick-label">AIM</span><div class="stick-base"><div class="stick-knob"></div></div></div></div>
+      <button id="fire" class="fire" aria-label="Fire">FIRE</button>
+      <div class="tips">LEFT THUMB · MOVE <span>RIGHT THUMB · AIM</span></div>
+    </section>
+  </main>
+  <main id="landing" class="screen landing hidden"><div class="lobby-card"><h1>🐥 Chicken Horde</h1><p>Open the host screen to start a lobby, then scan its QR code.</p></div></main>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script><script src="app.js"></script>
+</body></html>
