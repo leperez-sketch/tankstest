@@ -13,11 +13,10 @@ A static, no-build multiplayer prototype for GitHub Pages. The host renders the 
 ## Controls
 
 - Left virtual stick: move only.
-- Right virtual stick: aim only.
-- Large FIRE button: hold to shoot in the aimed direction.
-- Desktop host: keyboard and mouse are not player controls; it is the shared game display.
+- Right virtual stick: aim and fire while held off-center. Releasing it stops firing.
+- Desktop controller fallback: WASD/arrows to move, mouse to aim, hold left-click or Space to fire.
 
-Touch input uses pointer events, independent touch identifiers, a dead zone, pointer capture, and `touch-action: none` to avoid page scrolling while playing. The map is a 3600 × 2400 farm with a central henhouse, broad paths, crop plots, trees, and a perimeter fence. The host camera frames the arena with responsive scaling.
+Touch input uses pointer events, independent touch identifiers, a dead zone, pointer capture, and `touch-action: none` to avoid page scrolling while playing. Trees block players, foxes, and shots. Foxes choose between nearby players and the henhouse, use lateral feints and pack pressure, and inflict 5 HP on contact. Defeated foxes have a low 7.5% chance to drop Double Shot, Laser, Shield, or brief Invincibility. The map is a 3600 × 2400 farm with a central henhouse, broad paths, crop plots, trees, and a perimeter fence. The host camera frames the arena with responsive scaling.
 
 ## Multiplayer notes
 
