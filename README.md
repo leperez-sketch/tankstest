@@ -27,3 +27,9 @@ The pages and game assets are static. PeerJS is loaded from its public CDN and u
 - `index.html`: host lobby/game and phone controller pages.
 - `style.css`: responsive display and touch controls.
 - `app.js`: lobby, peer connections, controls, farm map, and game loop.
+- `assets/nature/forest-sprites.svg`: optimized sprite sheet rendered from the supplied KayKit GLTF tree, rock, and bush models.
+- `assets/nature/forest_texture.png`: source texture atlas used to render the sprites.
+
+## Nature asset credit
+
+Forest models and texture: Kay Lousberg, **KayKit - Forest Nature Pack** (CC0 1.0). Official pack page: https://kaylousberg.itch.io/kaykit-forest
