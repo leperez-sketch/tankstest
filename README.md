@@ -1,4 +1,4 @@
-# Chicken Horde V5.1 — Farm Defense
+# Chicken Horde V5.2 — Farm Defense
 
 Static multiplayer game prototype for GitHub Pages. A host runs the match and phones join as controllers through PeerJS/WebRTC.
 
@@ -14,12 +14,14 @@ Static multiplayer game prototype for GitHub Pages. A host runs the match and ph
 
 - Compact battlefield: the playable world is 50% smaller in width and height than V4. The home, paths, scenery, and obstacle positions are scaled to fit; scenery density is reduced so routes stay open.
 - Waves start with a 3-second countdown and continue indefinitely.
-- The planned enemy total is multiplied to form groups of four or five. Additional players after the first raise wave counts by 25% each.
+- Wave enemies arrive in groups of four or five. The planned enemy count rises by 25% for every player after the first.
 - Enemy base movement is 30% faster than V4. Speed increases by another 5% per wave starting after wave 3.
-- Wolves, foxes, eagles, and snakes retain their distinct movement and attacks. Moles burrow through obstacles; tornadoes weave quickly; aliens fire short, direct lasers; mages teleport; ghosts pass through obstacles; plants remain near Mama Hen and shoot seeds.
+- Wolves, foxes, eagles, and snakes retain their distinct movement and attacks. Moles burrow through obstacles; aliens fire short, direct lasers; mages teleport; ghosts pass through obstacles; plants remain near Mama Hen and shoot seeds.
 - Moles and plants spawn near Mama Hen, so players need to return to defend the center.
 - One Chupacabras appears in wave 5. Starting in wave 6, it can appear rarely as an elite in the regular enemy rotation. Its eye-fire attack targets players or the henhouse.
-- The only power-up drop is Laser. Regular enemies have a 10% chance to drop it; a Chupacabras drops one when defeated. Laser range is 60% shorter than V4 to reward active positioning.
+- Power-ups are now limited to a 26-second shield and a rare medkit that restores up to 35 health. Enemies have a 10% chance to drop a power-up; medkits make up about one quarter of those drops. Chupacabras guarantees a shield.
+- Tornadoes pause to grow and aim at Mama Hen, then dash straight through the arena and leave the map. They no longer linger beside the henhouse.
+- Four low boulders near the henhouse provide cover. They block movement and shots while leaving broad routes open.
 - The henhouse heals 8% after each completed wave. Player scores, nameplates, damage feedback, audio options, and the game-over scoreboard remain.
 - All-time high scores are saved in the host browser's local storage.
 - Player movement is 15% faster than V5. Shot firing repeats every 120 ms while aim is held, and sound effects are boosted with a safe volume cap.
@@ -34,7 +36,7 @@ The camera follows living players and the henhouse. Touch controls use pointer e
 
 ## Assets and files
 
-The host lobby preloads the forest, ground, farm, eggs, player, and enemy sprites before enabling **START GAME**. Map art is cached for rendering; obstacle collision uses small footprints and a spatial index.
+The host lobby preloads the forest, ground, farm, eggs, player, and enemy sprites before enabling **START GAME**. Map art is cached for rendering; obstacle collision uses small footprints and a spatial index. The four new boulders also count as solid cover for players, enemies, and projectiles.
 
 - `index.html`: lobby/host and phone controller.
 - `style.css`: responsive display and touch layout.
