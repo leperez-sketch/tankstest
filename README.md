@@ -1,43 +1,50 @@
-# Chicken Horde V4 — Farm Defense
+# Chicken Horde V5 — Farm Defense
 
-A static, no-build multiplayer prototype for GitHub Pages. The host renders the game and runs the lobby; phones connect as controllers through PeerJS/WebRTC.
+Static multiplayer game prototype for GitHub Pages. A host runs the match and phones join as controllers through PeerJS/WebRTC.
 
 ## Publish on GitHub Pages
 
-1. Upload the contents of this folder to the repository root (or a Pages-enabled folder).
-2. Enable GitHub Pages for the branch/folder containing `index.html`.
+1. Upload this folder's contents to the repository root or a Pages-enabled folder.
+2. Enable GitHub Pages for that branch/folder.
 3. Open `https://<username>.github.io/<repository>/?host=1` on the host computer.
 4. Players scan the lobby QR code, enter a name, and tap **JOIN GAME**.
-5. The host presses **START GAME** when everyone is ready. The lobby never starts a match by itself.
+5. The host starts the match with **START GAME**.
+
+## Gameplay
+
+- Compact battlefield: the playable world is 50% smaller in width and height than V4. The home, paths, scenery, and obstacle positions are scaled to fit; scenery density is reduced so routes stay open.
+- Waves start with a 3-second countdown and continue indefinitely.
+- The planned enemy total is multiplied to form groups of four or five. Additional players after the first raise wave counts by 25% each.
+- Enemy base movement is 30% faster than V4. Speed increases by another 5% per wave starting after wave 3.
+- Wolves, foxes, eagles, and snakes retain their distinct movement and attacks. Moles burrow through obstacles; tornadoes weave quickly; aliens fire short, direct lasers; mages teleport; ghosts pass through obstacles; plants remain near Mama Hen and shoot seeds.
+- Moles and plants spawn near Mama Hen, so players need to return to defend the center.
+- One Chupacabras appears in wave 5. Starting in wave 6, it can appear rarely as an elite in the regular enemy rotation. Its eye-fire attack targets players or the henhouse.
+- The only power-up drop is Laser. Regular enemies have a 10% chance to drop it; a Chupacabras drops one when defeated. Laser range is 60% shorter than V4 to reward active positioning.
+- The henhouse heals 8% after each completed wave. Player scores, nameplates, damage feedback, audio options, and the game-over scoreboard remain.
+- All-time high scores are saved in the host browser's local storage.
 
 ## Controls
 
-- Left virtual stick: move only.
+- Left virtual stick: move.
 - Right virtual stick: aim and fire while held off-center. Releasing it stops firing.
-- Desktop controller fallback: WASD/arrows to move, mouse to aim, hold left-click or Space to fire.
+- Desktop fallback: WASD/arrows to move, mouse to aim, hold left-click or Space to fire.
 
-Touch controls remain unchanged. The playfield uses a near top-down view with slight depth compression; joystick directions map directly to the same visible screen directions. The camera tracks all living players and the henhouse, zooming out when the group spreads out and back in when it gathers. Touch input uses pointer events, independent touch identifiers, a dead zone, pointer capture, and `touch-action: none`. Trees block players and shots; enemies steer around trees. Foxes occasionally leap; wolves are slower, tougher, and coordinate in packs; fast eagles dive toward the farm. From wave 6 onward, enemy movement speed rises by 5% per wave. Each additional joined player increases that wave's enemy count by 25% (2 players: +25%, 3: +50%, and so on). Fast, fragile snakes first appear from wave 2 and always spawn in groups of three. The Chupacabras boss fires aimed fireballs at nearby players or the henhouse. The henhouse has a visible health bar and flashes red when hit; players flash red when damaged. Completing a wave restores 8% henhouse health. Each wave has a remaining-enemy counter, then shows a centered 3-second countdown before the next wave. Waves continue indefinitely and grow more difficult; enemy counts are 50% higher than in the previous build. Waves 5, 10, 15, and onward add 1, 2, 4, then 8 Chupacabras bosses. Laser power shoots a straight beam instead of bullets. Double Shot and Laser are permanent; Shield and Invincibility are timed. Effects can coexist, and duplicate timed effects extend their duration. Player scores count enemy defeats. A game-over screen shows the run's scores and the all-time high-score table. High scores are stored locally in the host browser and persist across sessions on that browser. The host's optional synthesized sound effects include firing, impacts, enemy defeats, wave cues, boss fire, and a short hen cry when the farm is attacked. Click **SOUND OFF** to enable them; browsers require a user gesture before audio can play.
+The camera follows living players and the henhouse. Touch controls use pointer events, independent touch identifiers, a dead zone, pointer capture, and `touch-action: none`.
 
-The host lobby preloads the map, farm, egg, player, and enemy sprites before enabling **START GAME**. Character art uses lightweight centered SVG sprites to avoid broken GLB projections and reduce load/render cost. The static field and road artwork is cached as one map image; obstacle sprites use small, species-appropriate collision footprints indexed spatially. Player and enemy movement, as well as shots and fireballs, are checked along their paths; enemy spawns avoid obstacles. Regular enemies have a 10% power-up drop chance, and each Chupacabras drops one on defeat.
+## Assets and files
+
+The host lobby preloads the forest, ground, farm, eggs, player, and enemy sprites before enabling **START GAME**. Map art is cached for rendering; obstacle collision uses small footprints and a spatial index.
+
+- `index.html`: lobby/host and phone controller.
+- `style.css`: responsive display and touch layout.
+- `app.js`: multiplayer lobby, gameplay, waves, controls, and scoring.
+- `assets/nature/`: farm and forest scenery, textures, soil paths, shack, and eggs.
+- `assets/actors/`: lightweight centered SVG sprites for the player, Mama Hen, Chupacabras, and all enemy types.
 
 ## Multiplayer notes
 
-The pages and game assets are static. PeerJS is loaded from its public CDN and uses the PeerJS signaling service to establish browser-to-browser WebRTC connections. Players send control state to the host; the host broadcasts the match state. Internet access is needed for the CDN/signaling service. This is a classroom prototype; for dependable large groups, use a dedicated signaling service and test the school network's WebRTC policy.
+Pages and game assets are static. PeerJS is loaded from its public CDN and uses the PeerJS signaling service to establish browser-to-browser WebRTC connections. Internet access is needed for the CDN and signaling. For large groups, use a dedicated signaling service and test the school network's WebRTC policy.
 
-## Files
+## Credits
 
-- `index.html`: host lobby/game and phone controller pages.
-- `style.css`: responsive display and touch controls.
-- `app.js`: lobby, peer connections, controls, farm map, and game loop.
-- `assets/nature/forest-sprites.svg`: lightweight, complete 2D forest sprite atlas used by the map and preloaded in the lobby.
-- `assets/nature/floor-grass-tile.png`: floor texture from **Floor Grass Sliced B**.
-- `assets/nature/grass-clump.svg` and `grass-texture.png`: decorative grass converted from **Grass by Quaternius**.
-- `assets/nature/fertile-soil.svg`: fertile soil model converted into a subtle path texture.
-- `assets/nature/mama-hen-shack.svg`: Shack GLB converted to a lightweight map sprite.
-- `assets/nature/mama-egg.svg`: egg sprite used by Mama Hen.
-- `assets/nature/forest_texture.png`: supplied KayKit source texture atlas, retained with the project assets.
-- `assets/actors/`: centered, self-contained SVG sprites for the player, Mama Hen, fox, wolf, eagle, snake, and Chupacabras. The lobby waits for these along with map art before enabling the start button.
-
-## Nature asset credit
-
-Forest models and texture: Kay Lousberg, **KayKit - Forest Nature Pack** (CC0 1.0). Floor Grass Sliced B: Isa Lousberg. Grass and Shack: Quaternius. Fertile soil: Frank Lynam. Egg model: Poly by Google.
+Forest models/texture: Kay Lousberg, **KayKit - Forest Nature Pack** (CC0 1.0). Floor Grass Sliced B: Isa Lousberg. Grass and Shack: Quaternius. Fertile soil: Frank Lynam. Egg: Poly by Google.
