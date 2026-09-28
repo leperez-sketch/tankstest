@@ -1,4 +1,4 @@
-# Chicken Horde V5 — Farm Defense
+# Chicken Horde V5.1 — Farm Defense
 
 Static multiplayer game prototype for GitHub Pages. A host runs the match and phones join as controllers through PeerJS/WebRTC.
 
@@ -22,11 +22,12 @@ Static multiplayer game prototype for GitHub Pages. A host runs the match and ph
 - The only power-up drop is Laser. Regular enemies have a 10% chance to drop it; a Chupacabras drops one when defeated. Laser range is 60% shorter than V4 to reward active positioning.
 - The henhouse heals 8% after each completed wave. Player scores, nameplates, damage feedback, audio options, and the game-over scoreboard remain.
 - All-time high scores are saved in the host browser's local storage.
+- Player movement is 15% faster than V5. Shot firing repeats every 120 ms while aim is held, and sound effects are boosted with a safe volume cap.
 
 ## Controls
 
 - Left virtual stick: move.
-- Right virtual stick: aim and fire while held off-center. Releasing it stops firing.
+- Right virtual stick: aim and rapid-fire while held off-center. Releasing it stops firing.
 - Desktop fallback: WASD/arrows to move, mouse to aim, hold left-click or Space to fire.
 
 The camera follows living players and the henhouse. Touch controls use pointer events, independent touch identifiers, a dead zone, pointer capture, and `touch-action: none`.
