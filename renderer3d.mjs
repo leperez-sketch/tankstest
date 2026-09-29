@@ -48,6 +48,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
   const fireballNodes = new Map();
   const dropNodes = new Map();
   const beamNodes = new Map();
+  const bloodNodes = new Map();
   const actorPalette = new Map();
   let farmBar = null;
   let farmBarCanvas = null;
@@ -68,6 +69,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
   }
 
   async function loadModels() {
+    if (document.fonts?.load) await Promise.race([document.fonts.load('12px Bungee'), new Promise(resolve => setTimeout(resolve, 1400))]);
     let done = 0;
     let failed = 0;
     statusUpdate(done, false);
@@ -256,7 +258,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     g.lineWidth = 7;
     rounded(g, 7, 7, 498, 114, 24); g.fill(); g.stroke();
     g.fillStyle = player.color; g.beginPath(); g.arc(37, 45, 13, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#fff8de'; g.font = '800 36px system-ui, sans-serif'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(labelText.slice(0, 24), 63, 46);
+    g.fillStyle = '#fff8de'; g.font = '800 36px Bungee, sans-serif'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(labelText.slice(0, 24), 63, 46);
     g.fillStyle = '#536252'; rounded(g, 25, 78, 462, 18, 8); g.fill();
     g.fillStyle = health > 55 ? '#72d77f' : health > 25 ? '#f2c64c' : '#fa6262'; rounded(g, 25, 78, 462 * health / 100, 18, 8); g.fill();
     texture.needsUpdate = true;
@@ -336,12 +338,16 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     const weaponPivot = new THREE.Group(); weaponPivot.position.set(0.28, 0.55, 0.16); weaponPivot.add(makeWeapon()); root.add(weaponPivot);
     const label = makeBillboard(1.9, 0.48); label.sprite.position.set(0, 1.68, 0); root.add(label.sprite);
     const shield = new THREE.Mesh(new THREE.SphereGeometry(0.82, 16, 12), new THREE.MeshBasicMaterial({ color: '#76e8ff', wireframe: true, transparent: true, opacity: 0.45 })); shield.position.y = 0.67; shield.visible = false; root.add(shield);
+    const angel = new THREE.Group(); angel.visible = false;
+    const halo = new THREE.Mesh(new THREE.TorusGeometry(0.23, 0.035, 8, 28), new THREE.MeshBasicMaterial({ color: '#ffe88a', emissive: '#ffe88a' })); halo.position.set(0, 1.75, 0.04); halo.rotation.x = Math.PI / 2; angel.add(halo);
+    for (const side of [-1, 1]) { const wing = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 8), new THREE.MeshStandardMaterial({ color: '#fff9e9', emissive: '#e9dfc5', emissiveIntensity: 0.18, roughness: 0.65 })); wing.scale.set(1.25, 0.17, 0.72); wing.position.set(side * 0.48, 0.98, -0.12); wing.rotation.z = side * -0.3; angel.add(wing); } root.add(angel);
     scene.add(root);
     root.userData.aura = aura;
     root.userData.ring = ring;
     root.userData.weapon = weaponPivot;
     root.userData.label = label;
     root.userData.shield = shield;
+    root.userData.angel = angel;
     return root;
   }
 
@@ -367,7 +373,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     node.lastHealth = key;
     const { canvas: c, context: g, texture } = node;
     g.clearRect(0, 0, c.width, c.height);
-    if (enemy.type === 'BOSS') { g.fillStyle = '#10251fee'; rounded(g, 5, 8, 502, 106, 22); g.fill(); g.fillStyle = '#ffe4a0'; g.font = '800 31px system-ui'; g.textAlign = 'center'; g.fillText('CHUPACABRAS', 256, 42); }
+    if (enemy.type === 'BOSS') { g.fillStyle = '#10251fee'; rounded(g, 5, 8, 502, 106, 22); g.fill(); g.fillStyle = '#ffe4a0'; g.font = '800 31px Bungee, sans-serif'; g.textAlign = 'center'; g.fillText('CHUPACABRAS', 256, 42); }
     g.fillStyle = '#263d30'; rounded(g, 24, enemy.type === 'BOSS' ? 67 : 46, 464, 28, 10); g.fill();
     g.fillStyle = enemy.type === 'BOSS' ? '#ff5360' : '#ee6260'; rounded(g, 24, enemy.type === 'BOSS' ? 67 : 46, 464 * ratio, 28, 10); g.fill();
     texture.needsUpdate = true;
@@ -404,13 +410,13 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     const { canvas: c, context: g, texture } = farmBar;
     g.clearRect(0, 0, c.width, c.height);
     g.fillStyle = '#10251fee'; rounded(g, 5, 8, 502, 110, 20); g.fill();
-    g.fillStyle = '#fff7dc'; g.font = '850 29px system-ui, sans-serif'; g.textAlign = 'center'; g.fillText(`MAMA HEN · ${Math.ceil(hp)}%`, 256, 42);
+    g.fillStyle = '#fff7dc'; g.font = '850 29px Rye, Georgia, serif'; g.textAlign = 'center'; g.fillText(`MAMA HEN · ${Math.ceil(hp)}%`, 256, 42);
     g.fillStyle = '#263d30'; rounded(g, 28, 65, 456, 34, 10); g.fill();
     g.fillStyle = henFlash && Math.floor(now / 70) % 2 === 0 ? '#ff3546' : '#53d57a'; rounded(g, 31, 68, 450 * Math.max(0, hp) / 100, 28, 8); g.fill();
     texture.needsUpdate = true;
   }
 
-  function syncPlayers(players, now, dt) {
+  function syncPlayers(players, now, dt, lobby = false) {
     const seen = new Set();
     for (const player of players.values()) {
       seen.add(player.id);
@@ -420,13 +426,14 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
       node.position.x += (position.x - node.position.x) * Math.min(1, dt * 13);
       node.position.z += (position.z - node.position.z) * Math.min(1, dt * 13);
       node.position.y = 0.035 + Math.sin(now / 170 + player.x) * 0.018;
-      node.rotation.y = Math.PI / 2 - player.aim;
+      node.rotation.y = Math.PI / 2 - player.aim;node.scale.setScalar(lobby && player.hp>0 ? 1.55 : 1);
       node.userData.shield.visible = now < (player.effects.SHIELD || 0);
       const hit = player.lastHit > 0 && now - player.lastHit < 460 && Math.floor(now / 65) % 2 === 0;
       node.userData.aura.material.color.set(hit ? '#ff273b' : player.color);
       node.userData.ring.material.color.set(hit ? '#ff273b' : player.color);
       drawNameplate(node.userData.label, player);
-      node.userData.weapon.visible = true;
+      const dead = player.hp <= 0;node.userData.angel.visible = dead;node.userData.shield.visible = !dead && now < (player.effects.SHIELD || 0);node.userData.weapon.visible = !dead;node.visible = player.connected !== false || dead;
+      if (dead) { const t = Math.max(0, (now - (player.deathAt || now)) / 1000);node.position.y = 0.12 + Math.min(1.7,t * 0.42) + Math.sin(now / 130) * 0.06;node.rotation.z = Math.sin(now / 210) * 0.04;node.userData.angel.rotation.z = Math.sin(now / 95) * 0.2;node.userData.angel.rotation.y = Math.sin(now / 600) * 0.2;node.userData.aura.material.color.set('#fff0a6');node.userData.ring.material.color.set('#fff0a6')}else {node.position.y = 0.035 + Math.sin(now / 170 + player.x) * 0.018;node.rotation.z = 0;}
     }
     for (const [id, node] of playerNodes) if (!seen.has(id)) { scene.remove(node); playerNodes.delete(id); }
   }
@@ -475,8 +482,9 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
             const box = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.42, 0.3), new THREE.MeshStandardMaterial({ color: '#fff', roughness: 0.7 })); box.castShadow = true; node.add(box);
             const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.28, 0.035), new THREE.MeshBasicMaterial({ color: '#d52d39' })); crossV.position.z = 0.17; node.add(crossV);
             const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.09, 0.035), new THREE.MeshBasicMaterial({ color: '#d52d39' })); crossH.position.z = 0.17; node.add(crossH);
-          } else {
-            node = new THREE.Group(); const orb = new THREE.Mesh(new THREE.SphereGeometry(0.4, 12, 8), new THREE.MeshBasicMaterial({ color: '#81ddf5', wireframe: true })); node.add(orb);
+          } else if (item.type === 'DOUBLE') { node = new THREE.Group();const mat=new THREE.MeshBasicMaterial({color:'#ffd95d',emissive:'#f2a900'});for(const side of [-1,1]){const orb=new THREE.Mesh(new THREE.SphereGeometry(.18,10,8),mat);orb.position.x=side*.17;node.add(orb)}
+          } else if (item.type === 'RAPID') { node = new THREE.Group();const bolt=new THREE.Mesh(new THREE.ConeGeometry(.2,.62,5),new THREE.MeshBasicMaterial({color:'#8ceaff',emissive:'#28a9dc'}));bolt.rotation.z=-.2;node.add(bolt);
+          } else { node = new THREE.Group(); const orb = new THREE.Mesh(new THREE.SphereGeometry(0.4, 12, 8), new THREE.MeshBasicMaterial({ color: '#81ddf5', wireframe: true })); node.add(orb);
           }
         } else if (kind === 'fireball') node = sphere(item.kind === 'seed' ? '#b8ed53' : '#ff552d', item.kind === 'seed' ? 0.16 : 0.22, item.kind === 'seed' ? '#b8ed53' : '#ff2600');
         else node = new THREE.Group();
@@ -495,6 +503,26 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     for (const [item, node] of pool) if (!seen.has(item)) { scene.remove(node); pool.delete(item); }
   }
 
+
+  function syncBlood(items, now) {
+    const seen = new Set();
+    for (const item of items) {
+      seen.add(item);
+      let group = bloodNodes.get(item);
+      if (!group) {
+        group = new THREE.Group();
+        const red = new THREE.MeshBasicMaterial({ color: '#a91f25', transparent: true, opacity: 0.78, depthWrite: false });
+        const bright = new THREE.MeshBasicMaterial({ color: '#df3832', transparent: true, opacity: 0.82, depthWrite: false });
+        const center = new THREE.Mesh(new THREE.CircleGeometry(0.28, 12), red); center.rotation.x = -Math.PI / 2; center.position.y = 0.035; group.add(center);
+        for (let i = 0; i < 7; i++) { const drop = new THREE.Mesh(new THREE.CircleGeometry(i % 3 === 0 ? 0.085 : 0.055, 8), i % 2 ? bright : red); const a = item.seed * 0.001 + i * 2.399, r = 0.28 + ((i * 37) % 100) / 100 * 0.48; drop.rotation.x = -Math.PI / 2; drop.position.set(Math.cos(a) * r, 0.038, Math.sin(a) * r); group.add(drop); }
+        bloodNodes.set(item, group); scene.add(group);
+      }
+      group.position.copy(actorPosition(item.x, item.y));
+      const fade = Math.min(1, item.life / 2.4);group.children.forEach(mesh => { mesh.material.opacity = 0.82 * fade; });
+    }
+    for (const [item, group] of bloodNodes) if (!seen.has(item)) { scene.remove(group); group.traverse(obj => { obj.geometry?.dispose(); }); bloodNodes.delete(item); }
+  }
+
   function updateCountdown(countdown, wave) {
     if (!countdownSprite) return;
     const value = countdown > 0 ? `${wave}\n${Math.ceil(countdown)}` : '';
@@ -504,8 +532,8 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     g.clearRect(0, 0, c.width, c.height);
     if (value) {
       g.fillStyle = '#10251feb'; rounded(g, 7, 7, 498, 114, 24); g.fill(); g.strokeStyle = '#f4d579'; g.lineWidth = 5; g.stroke();
-      g.fillStyle = '#f4d579'; g.font = '800 24px system-ui'; g.textAlign = 'center'; g.fillText(`WAVE ${wave} · GET READY`, 256, 39);
-      g.fillStyle = '#fff'; g.font = '900 63px system-ui'; g.fillText(String(Math.ceil(countdown)), 256, 99);
+      g.fillStyle = '#f4d579'; g.font = '800 24px Bungee, sans-serif'; g.textAlign = 'center'; g.fillText(`WAVE ${wave} · GET READY`, 256, 39);
+      g.fillStyle = '#fff'; g.font = '900 63px Bungee, sans-serif'; g.fillText(String(Math.ceil(countdown)), 256, 99);
     }
     texture.needsUpdate = true;
     countdownSprite.sprite.visible = !!value;
@@ -546,12 +574,13 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     resize,
     render(state, dt, now) {
       if (ready) {
-        syncPlayers(state.players, now, dt);
+        syncPlayers(state.players, now, dt, !!state.lobby);
         syncEnemies(state.enemies, now, dt);
         syncProjectiles('shot', state.shots, projectileNodes, now);
         syncProjectiles('fireball', state.fireballs, fireballNodes, now);
         syncProjectiles('drop', state.drops, dropNodes, now);
         syncProjectiles('beam', state.enemyBeams, beamNodes, now);
+        syncBlood(state.bloodSplats || [], now);
         const henFlash = state.henLastHit > 0 && now - state.henLastHit < 500;
         updateFarmBar(state.farmHp, henFlash, now);
         updateCountdown(state.countdown, state.wave);

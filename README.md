@@ -1,4 +1,4 @@
-# Chicken Horde V6.1 3D — Farm Defense
+# Chicken Horde V6.2 3D — Farm Defense
 
 Static multiplayer game for GitHub Pages. The host runs the match; phones join as controllers through PeerJS/WebRTC. The game keeps the V5.2 rules and changes the host rendering to real-time 3D.
 
@@ -7,7 +7,7 @@ Static multiplayer game for GitHub Pages. The host runs the match; phones join a
 1. Upload this folder's contents to the repository root or a Pages-enabled folder.
 2. Enable GitHub Pages for that branch/folder.
 3. Open `https://<username>.github.io/<repository>/?host=1` on the host computer.
-4. Players scan the lobby QR code and enter a name. The lobby stays open until the host presses **START GAME**.
+4. Players scan the lobby QR code and enter a name. The lobby stays open until the host presses **START GAME**. After Game Over, **RETURN TO LOBBY** keeps the same room, QR code, and roster.
 5. The lobby preloads the 3D models before enabling the start button.
 
 ## Camera and visuals
@@ -15,17 +15,17 @@ Static multiplayer game for GitHub Pages. The host runs the match; phones join a
 - Fixed, tilted top-down 3D perspective inspired by the reference image.
 - Dynamic camera follows the player group while keeping Mama Hen in view; it zooms out as players spread apart and eases back in when they regroup.
 - Real GLB models for the player chicken, Mama Hen, fox, wolf, eagle, snake, Chupacabras, eggs, house, ground, grass, trees, and rocks. The rifle is loaded from OBJ/MTL. Missing model files fall back to simple 3D shapes.
-- Nameplates, health bars, player color, shield, damage flashes, projectiles, enemy attacks, tornadoes, and wave countdown render in the 3D scene.
+- Nameplates, health bars, player color, shield, damage flashes, angel-style player death animation, stylized enemy blood splashes, projectiles, enemy attacks, tornadoes, and wave countdown render in the 3D scene. Lobby player models are enlarged for easier recognition.
 - The models and textures are loaded from local files in `assets/models`; Three.js itself is loaded from jsDelivr.
 
 ## Preserved gameplay
 
 - Infinite waves with a 3-second countdown and groups of enemies. Enemy count increases 25% for each player after the first.
 - Enemies start 30% faster than V4; speed rises another 5% each wave after wave 3. Foxes jump, wolves attack in packs, eagles dive, snakes arrive in groups, and the later waves include moles, aliens, mages, ghosts, plants, and tornadoes. Chupacabras appears at wave 5 and rarely as an elite from wave 6 onward, with an eye-fire attack.
-- Drops are limited to shields and occasional medkits, at the existing 10% drop chance. No laser, double-shot, or triple-shot pickups.
+- Drops use a 10% chance per defeated enemy: shield, occasional medkit, non-stacking double-shot, or rapid-fire. Double-shot lasts 20 seconds; rapid-fire lasts 16 seconds. Re-picking up an active effect refreshes it without stacking.
 - Tornadoes grow while aiming toward the henhouse, then dash across the map. Four nearby boulders provide defensive cover and block movement/projectiles. Moles and plants pressure the center.
 - Mama Hen heals 8% after each completed wave. Player movement remains 15% faster; aiming auto-fires rapidly while held.
-- Sound options, player scoring, nameplates, game-over screen, and local all-time high scores remain.
+- Sound options, player scoring, nameplates, game-over screen, and local all-time high scores remain. A synthesized chick death cue uses the existing Web Audio sound toggle; no external sound file is required.
 
 ## Controls
 
@@ -43,7 +43,9 @@ Static multiplayer game for GitHub Pages. The host runs the match; phones join a
 
 ## Multiplayer notes
 
-Pages and game assets are static. PeerJS is loaded from its public CDN and uses its public signaling service to establish browser-to-browser WebRTC connections. Internet access is needed for the CDN and signaling. For large groups, use a dedicated signaling service and test the school network's WebRTC policy.
+Pages and game assets are static. PeerJS is loaded from its public CDN and uses its public signaling service to establish browser-to-browser WebRTC connections. Internet access is needed for the CDN and signaling. The host retains disconnected players for 45 seconds. Controllers keep a stable local player ID and retry with backoff; if they reconnect during this window, their player and score are preserved. The host can kick a player from the lobby roster or from the PLAYERS menu during a match. An idle connection is treated as lost after 12 seconds, then kept for the 45-second reconnect window. A QR join panel is available from the host toolbar during a match and supports hover, keyboard focus, and tap.
+
+PeerJS/WebRTC can retry signaling and recover brief dropouts, but browser-only static hosting cannot bypass networks that block WebRTC or require a TURN relay. For restrictive school proxies, configure a dedicated PeerServer plus TURN service; retry logic alone cannot make blocked UDP/TCP relay traffic pass.
 
 ## Asset credits
 
