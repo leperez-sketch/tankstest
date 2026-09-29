@@ -16,7 +16,7 @@ const FILES = [
 export function createGameRenderer({ canvas, world, trees, grassTufts, status, startButton }) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#8fb878');
-  scene.fog = new THREE.Fog('#8fb878', 46, 92);
+  scene.fog = new THREE.Fog('#8fb878', 34, 72);
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 160);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.45));
@@ -142,8 +142,11 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
   }
 
   function makeGround() {
-    const width = world.w / UNIT;
-    const depth = world.h / UNIT;
+    const arenaWidth = world.w / UNIT;
+    const arenaDepth = world.h / UNIT;
+    // Continue the pasture beyond the playable boundary so fog blends the arena edge into the background.
+    const width = arenaWidth + 24;
+    const depth = arenaDepth + 20;
     let map = null;
     if (models.ground) {
       models.ground.traverse(node => {
@@ -168,7 +171,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     scene.add(ground);
 
     const pathMaterial = new THREE.MeshStandardMaterial({ color: '#b99b67', roughness: 1 });
-    for (const [x, z, w, d] of [[0, 0, 2.05, depth], [0, 0, width, 1.92]]) {
+    for (const [x, z, w, d] of [[0, 0, 2.05, arenaDepth * 0.9], [0, 0, arenaWidth * 0.9, 1.92]]) {
       const path = new THREE.Mesh(new THREE.PlaneGeometry(w, d), pathMaterial);
       path.rotation.x = -Math.PI / 2;
       path.position.set(x, 0.006, z);
@@ -180,6 +183,15 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     clearing.position.y = 0.014;
     clearing.receiveShadow = true;
     scene.add(clearing);
+
+    const battleFog = new THREE.Mesh(new THREE.PlaneGeometry(arenaWidth, arenaDepth), new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, uniforms: { fogColor: { value: new THREE.Color('#8fb878') } },
+      vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+      fragmentShader: 'uniform vec3 fogColor; varying vec2 vUv; void main(){ float edge=min(min(vUv.x,1.0-vUv.x),min(vUv.y,1.0-vUv.y)); float alpha=(1.0-smoothstep(0.015,0.115,edge))*0.94; gl_FragColor=vec4(fogColor,alpha); }'
+    }));
+    battleFog.rotation.x = -Math.PI / 2;
+    battleFog.position.y = -0.012;
+    scene.add(battleFog);
 
     const cropMaterialA = new THREE.MeshStandardMaterial({ color: '#e0bd5b', roughness: 1 });
     const cropMaterialB = new THREE.MeshStandardMaterial({ color: '#729e42', roughness: 1 });
@@ -197,6 +209,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     const pos = actorPosition(x, y);
     obj.position.copy(pos);
     obj.rotation.y = yaw;
+    obj.traverse(part => { if (part.isMesh) { part.castShadow = false; part.receiveShadow = true; } });
     obj.userData.collidable = collidable;
     scene.add(obj);
   }
@@ -210,13 +223,31 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
   }
 
   function createGrass(tufts) {
-    if (!models.grass) return;
-    let placed = 0;
-    for (const tuft of tufts) {
-      if (placed >= 24) break;
-      const h = Math.max(0.36, tuft.s * 2.1 / UNIT);
-      placeNature(models.grass, tuft.x, tuft.y, h, tuft.r, false);
-      placed++;
+    if (!models.grass || !tufts.length) return;
+    const template = makeModel(models.grass, 0.55);
+    if (!template) return;
+    template.updateMatrixWorld(true);
+    const parts = [];
+    template.traverse(node => { if (node.isMesh && node.geometry && node.material) parts.push(node); });
+    const position = new THREE.Vector3(), rotation = new THREE.Quaternion(), scale = new THREE.Vector3();
+    const matrix = new THREE.Matrix4(), yaw = new THREE.Quaternion(), unitScale = new THREE.Vector3();
+    for (const part of parts) {
+      const instances = new THREE.InstancedMesh(part.geometry, part.material, tufts.length);
+      instances.castShadow = false;
+      instances.receiveShadow = true;
+      for (let i = 0; i < tufts.length; i++) {
+        const tuft = tufts[i];
+        const groundPoint = actorPosition(tuft.x, tuft.y, 0.008);
+        const s = Math.max(0.68, Math.min(2.1, tuft.s / 15));
+        position.copy(groundPoint);
+        yaw.setFromAxisAngle(new THREE.Vector3(0, 1, 0), tuft.r);
+        scale.set(s, s, s);
+        matrix.compose(position, yaw, scale).multiply(part.matrixWorld);
+        instances.setMatrixAt(i, matrix);
+      }
+      instances.instanceMatrix.needsUpdate = true;
+      instances.computeBoundingSphere();
+      scene.add(instances);
     }
   }
 
@@ -356,6 +387,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     root.traverse(part => { if (part.isMesh) { part.castShadow = false; part.receiveShadow = false; } });
     const health = makeBillboard(enemy.type === 'BOSS' ? 2.55 : 1.25, enemy.type === 'BOSS' ? 0.5 : 0.3);
     health.sprite.position.y = height + 0.35;
+    health.sprite.material.depthTest = true;
     root.add(health.sprite);
     root.userData.health = health;
     root.userData.height = height;
@@ -396,9 +428,6 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     }
     createMapTrees(obstacles);
     createGrass(tufts);
-    const boundary = new THREE.Mesh(new THREE.BoxGeometry(mapData.w / UNIT, 0.04, mapData.h / UNIT), new THREE.EdgesGeometry(new THREE.BoxGeometry(mapData.w / UNIT - 0.5, 0.02, mapData.h / UNIT - 0.5)));
-    boundary.material = new THREE.LineBasicMaterial({ color: '#d6c17d', transparent: true, opacity: 0.36 });
-    boundary.position.y = 0.02; scene.add(boundary);
     countdownSprite = makeBillboard(4.2, 2.1); countdownSprite.sprite.position.set(0, 8.2, 0); scene.add(countdownSprite.sprite); countdownCanvas = countdownSprite.canvas;
   }
 

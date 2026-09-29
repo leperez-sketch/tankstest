@@ -1,4 +1,4 @@
-# Chicken Horde V6.2.1 3D — Farm Defense
+# Chicken Horde V6.2.2 3D — Farm Defense
 
 Static multiplayer game for GitHub Pages. The host runs the match; phones join as controllers through PeerJS/WebRTC. The game keeps the V5.2 rules and changes the host rendering to real-time 3D.
 
@@ -15,14 +15,14 @@ Static multiplayer game for GitHub Pages. The host runs the match; phones join a
 - Fixed, tilted top-down 3D perspective inspired by the reference image.
 - Dynamic camera follows the player group while keeping Mama Hen in view; it zooms out as players spread apart and eases back in when they regroup.
 - Real GLB models for the player chicken, Mama Hen, fox, wolf, eagle, snake, Chupacabras, eggs, house, ground, grass, trees, and rocks. The rifle is loaded from OBJ/MTL. Missing model files fall back to simple 3D shapes.
-- Nameplates, health bars, player color, shield, damage flashes, angel-style player death animation, stylized enemy blood splashes, projectiles, enemy attacks, tornadoes, and wave countdown render in the 3D scene. Lobby player models are enlarged for easier recognition.
+- Nameplates, health bars, player color, shield, damage flashes, angel-style player death animation, stylized enemy blood splashes, projectiles, enemy attacks, tornadoes, and wave countdown render in the 3D scene. Lobby player models are enlarged for easier recognition. Battle fog softens the outer 10% of the arena and blends into an extended pasture plane; the center and outer map have additional obstacle lanes. Grass tufts are rendered as instanced meshes to increase ground detail with few draw calls. Enemy health bars are depth-tested so they do not float through the house or other scenery.
 - The models and textures are loaded from local files in `assets/models`; Three.js itself is loaded from jsDelivr.
 
 ## Preserved gameplay
 
 - Infinite waves with a 3-second countdown and groups of enemies. Enemy count increases 25% for each player after the first.
-- All enemies, including Chupacabras, run 13% slower than the previous V6.2 build; speed rises another 5% each wave after wave 3. Foxes jump, wolves attack in packs, eagles dive, snakes arrive in groups, and the later waves include moles, aliens, mages, ghosts, plants, and tornadoes. Chupacabras appears at wave 5 and rarely as an elite from wave 6 onward, with an eye-fire attack.
-- Drops use a 10% chance per defeated enemy: shield, occasional medkit, non-stacking double-shot, or rapid-fire. Double-shot lasts 20 seconds; rapid-fire lasts 16 seconds. Re-picking up an active effect refreshes it without stacking.
+- All enemies, including Chupacabras, use one fixed speed on every wave. Enemy damage is reduced by 60%. Foxes jump, wolves attack in packs, eagles dive, snakes arrive in groups, and the later waves include moles, aliens, mages, ghosts, plants, and tornadoes. Chupacabras appears at wave 5 and rarely as an elite from wave 6 onward, with an eye-fire attack. Mole, tornado, alien, mage, ghost, and plant enemies use visible procedural 3D models, so separate GLB files are optional.
+- Drops use a 10% chance per defeated enemy: shield, occasional medkit, permanent non-stacking double-shot, or permanent non-stacking rapid-fire. Duplicate shot upgrades do not stack.
 - Tornadoes grow while aiming toward the henhouse, then dash across the map. Four nearby boulders provide defensive cover and block movement/projectiles. Moles and plants pressure the center.
 - Mama Hen heals 8% after each completed wave. Player movement remains 15% faster; aiming auto-fires rapidly while held.
 - Background music (Farm Rave) has its own play toggle and volume slider. Sound effects have a separate toggle; the chick death cue is synthesized with Web Audio.
