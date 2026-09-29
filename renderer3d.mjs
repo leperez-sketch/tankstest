@@ -225,14 +225,16 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
 
   function makeBillboard(width, height) {
     const c = document.createElement('canvas');
-    c.width = 512;
-    c.height = 128;
+    c.width = 1024;
+    c.height = 256;
+    const context = c.getContext('2d');
+    context.scale(2, 2);
     const texture = new THREE.CanvasTexture(c);
     texture.colorSpace = THREE.SRGBColorSpace;
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false, depthWrite: false }));
     sprite.scale.set(width, height, 1);
     sprite.renderOrder = 10;
-    return { canvas: c, context: c.getContext('2d'), texture, sprite };
+    return { canvas: c, context, texture, sprite };
   }
 
   function rounded(ctx, x, y, width, height, radius) {
@@ -244,7 +246,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     const labelText = `${player.name} · ${player.score}`;
     const health = Math.max(0, Math.min(100, player.hp));
     if (node.lastName === labelText && node.lastHealth === health) return;
-    const { canvas: c, context: g, texture } = node.label;
+    const { canvas: c, context: g, texture } = node;
     g.clearRect(0, 0, c.width, c.height);
     g.fillStyle = '#10251fee';
     g.strokeStyle = player.color;
@@ -379,7 +381,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     }
     if (models.mama) {
       const mama = makeModel(models.mama, 1.45);
-      mama.position.copy(actorPosition(mapData.home.x, mapData.home.y + 92)); mama.rotation.y = Math.PI; scene.add(mama); farmBar = makeBillboard(4.6, 0.5); farmBar.sprite.position.set(0, 5.05, 0); scene.add(farmBar.sprite); farmBarCanvas = farmBar.canvas;
+      mama.position.copy(actorPosition(mapData.home.x, mapData.home.y + 92)); mama.rotation.y = Math.PI; scene.add(mama); farmBar = makeBillboard(4.0, 1.0); farmBar.sprite.position.set(0, 5.05, 0); scene.add(farmBar.sprite); farmBarCanvas = farmBar.canvas;
     }
     if (models.egg) for (const [dx, dy, size] of [[-38,56,.34],[0,62,.38],[38,56,.34]]) {
       const egg = makeModel(models.egg, size); egg.position.copy(actorPosition(mapData.home.x + dx, mapData.home.y + dy)); scene.add(egg);
@@ -398,7 +400,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     const { canvas: c, context: g, texture } = farmBar;
     g.clearRect(0, 0, c.width, c.height);
     g.fillStyle = '#10251fee'; rounded(g, 5, 8, 502, 110, 20); g.fill();
-    g.fillStyle = '#fff7dc'; g.font = '800 31px system-ui'; g.textAlign = 'center'; g.fillText(`MAMA HEN · ${Math.ceil(hp)}%`, 256, 42);
+    g.fillStyle = '#fff7dc'; g.font = '850 29px system-ui, sans-serif'; g.textAlign = 'center'; g.fillText(`MAMA HEN · ${Math.ceil(hp)}%`, 256, 42);
     g.fillStyle = '#263d30'; rounded(g, 28, 65, 456, 34, 10); g.fill();
     g.fillStyle = henFlash && Math.floor(now / 70) % 2 === 0 ? '#ff3546' : '#53d57a'; rounded(g, 31, 68, 450 * Math.max(0, hp) / 100, 28, 8); g.fill();
     texture.needsUpdate = true;

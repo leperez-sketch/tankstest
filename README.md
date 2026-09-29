@@ -1,4 +1,4 @@
-# Chicken Horde V6 3D — Farm Defense
+# Chicken Horde V6.1 3D — Farm Defense
 
 Static multiplayer game for GitHub Pages. The host runs the match; phones join as controllers through PeerJS/WebRTC. The game keeps the V5.2 rules and changes the host rendering to real-time 3D.
 
