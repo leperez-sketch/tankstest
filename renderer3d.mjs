@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
 
 const UNIT = 40;
 const PALETTE = ['#f4c542', '#58b7e6', '#e77a72', '#a885dc', '#62c58e', '#f39a4a'];
@@ -124,15 +125,12 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
   function makeModel(template, targetHeight, tint = null) {
     if (!template) return null;
     const outer = new THREE.Group();
-    const model = template.clone(true);
+    const model = cloneSkeleton(template);
     outer.add(model);
     const bounds = new THREE.Box3().setFromObject(model);
     const size = bounds.getSize(new THREE.Vector3());
     const max = Math.max(size.x, size.y, size.z, 0.00001);
-    let isSkinned = false;
-    model.traverse(node => { if (node.isSkinnedMesh) isSkinned = true; });
-    const skinScaleCorrection = isSkinned ? 0.04 : 1;
-    model.scale.multiplyScalar((targetHeight / max) * skinScaleCorrection);
+    model.scale.multiplyScalar(targetHeight / max);
     model.updateMatrixWorld(true);
     const fitted = new THREE.Box3().setFromObject(model);
     const center = fitted.getCenter(new THREE.Vector3());
@@ -446,7 +444,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
       if (!node) { node = makeEnemy(enemy); enemyNodes.set(enemy, node); }
       const position = actorPosition(enemy.x, enemy.y);
       node.position.set(position.x, enemy.type === 'TORNADO' ? (enemy.visualScale || 1) * 0.08 : 0, position.z);
-      node.rotation.y = enemy.type === 'TORNADO' ? Math.PI / 2 - enemy.travelAngle : enemy.type === 'EAGLE' ? Math.PI / 2 - (enemy.dashUntil > now ? Math.atan2(enemy.dashY-enemy.y, enemy.dashX-enemy.x) : Math.PI / 2) : 0;
+      node.rotation.y = enemy.type === 'TORNADO' ? Math.PI / 2 - enemy.travelAngle : Math.PI / 2 - (enemy.facing ?? Math.PI / 2);
       const jump = enemy.type === 'FOX' && now < enemy.jumpUntil ? Math.sin((enemy.jumpUntil - now) / 360 * Math.PI) * 0.75 : 0;
       node.position.y += jump;
       const size = enemy.type === 'TORNADO' ? 0.45 + (enemy.visualScale || 0.35) * 0.65 : 1;

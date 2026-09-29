@@ -1,4 +1,4 @@
-# Chicken Horde V6.2 3D — Farm Defense
+# Chicken Horde V6.2.1 3D — Farm Defense
 
 Static multiplayer game for GitHub Pages. The host runs the match; phones join as controllers through PeerJS/WebRTC. The game keeps the V5.2 rules and changes the host rendering to real-time 3D.
 
@@ -21,11 +21,11 @@ Static multiplayer game for GitHub Pages. The host runs the match; phones join a
 ## Preserved gameplay
 
 - Infinite waves with a 3-second countdown and groups of enemies. Enemy count increases 25% for each player after the first.
-- Enemies start 30% faster than V4; speed rises another 5% each wave after wave 3. Foxes jump, wolves attack in packs, eagles dive, snakes arrive in groups, and the later waves include moles, aliens, mages, ghosts, plants, and tornadoes. Chupacabras appears at wave 5 and rarely as an elite from wave 6 onward, with an eye-fire attack.
+- All enemies, including Chupacabras, run 13% slower than the previous V6.2 build; speed rises another 5% each wave after wave 3. Foxes jump, wolves attack in packs, eagles dive, snakes arrive in groups, and the later waves include moles, aliens, mages, ghosts, plants, and tornadoes. Chupacabras appears at wave 5 and rarely as an elite from wave 6 onward, with an eye-fire attack.
 - Drops use a 10% chance per defeated enemy: shield, occasional medkit, non-stacking double-shot, or rapid-fire. Double-shot lasts 20 seconds; rapid-fire lasts 16 seconds. Re-picking up an active effect refreshes it without stacking.
 - Tornadoes grow while aiming toward the henhouse, then dash across the map. Four nearby boulders provide defensive cover and block movement/projectiles. Moles and plants pressure the center.
 - Mama Hen heals 8% after each completed wave. Player movement remains 15% faster; aiming auto-fires rapidly while held.
-- Sound options, player scoring, nameplates, game-over screen, and local all-time high scores remain. A synthesized chick death cue uses the existing Web Audio sound toggle; no external sound file is required.
+- Background music (Farm Rave) has its own play toggle and volume slider. Sound effects have a separate toggle; the chick death cue is synthesized with Web Audio.
 
 ## Controls
 
