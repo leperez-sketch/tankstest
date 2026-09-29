@@ -43,6 +43,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
 
   const loader = new GLTFLoader();
   const models = {};
+  const modelAnimations = {};
   const playerNodes = new Map();
   const enemyNodes = new Map();
   const projectileNodes = new Map();
@@ -79,6 +80,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
       try {
         const data = await loader.loadAsync(`./assets/models/${file}`);
         models[key] = data.scene;
+        modelAnimations[key] = data.animations || [];
       } catch (error) {
         failed++;
         console.warn(`No se pudo cargar el modelo ${file}; se usará un modelo de respaldo.`, error);
@@ -107,7 +109,9 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
       if (!node.isMesh) return;
       node.castShadow = true;
       node.receiveShadow = true;
-      node.frustumCulled = true;
+      // Animated GLB skin bounds often describe the bind pose only; frustum culling
+      // can then hide a wolf/snake while its skeleton moves outside that stale box.
+      node.frustumCulled = !node.isSkinnedMesh;
       const apply = material => {
         const copy = material.clone();
         copy.side = THREE.DoubleSide;
@@ -127,6 +131,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     const outer = new THREE.Group();
     const model = cloneSkeleton(template);
     outer.add(model);
+    model.updateMatrixWorld(true);
     const bounds = new THREE.Box3().setFromObject(model);
     const size = bounds.getSize(new THREE.Vector3());
     const max = Math.max(size.x, size.y, size.z, 0.00001);
@@ -138,6 +143,16 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     model.position.y -= fitted.min.y;
     model.position.z -= center.z;
     setupMaterial(outer, tint);
+    const modelKey = Object.keys(models).find(key => models[key] === template);
+    const clips = modelAnimations[modelKey] || [];
+    if (clips.length) {
+      const mixer = new THREE.AnimationMixer(model);
+      const preferred = modelKey === 'wolf' ? /walk|gallop/i : modelKey === 'snake' ? /walk/i : modelKey === 'boss' ? /run|walk/i : /walk|run/i;
+      const clip = clips.find(item => preferred.test(item.name)) || clips[0];
+      mixer.clipAction(clip).play();
+      outer.userData.animationMixer = mixer;
+    }
+    outer.traverse(node => { if (node.isSkinnedMesh) node.frustumCulled = false; });
     return outer;
   }
 
@@ -472,6 +487,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
       let node = enemyNodes.get(enemy);
       if (!node) { node = makeEnemy(enemy); enemyNodes.set(enemy, node); }
       const position = actorPosition(enemy.x, enemy.y);
+      node.userData.animationMixer?.update(dt);
       node.position.set(position.x, enemy.type === 'TORNADO' ? (enemy.visualScale || 1) * 0.08 : 0, position.z);
       node.rotation.y = enemy.type === 'TORNADO' ? Math.PI / 2 - enemy.travelAngle : Math.PI / 2 - (enemy.facing ?? Math.PI / 2);
       const jump = enemy.type === 'FOX' && now < enemy.jumpUntil ? Math.sin((enemy.jumpUntil - now) / 360 * Math.PI) * 0.75 : 0;

@@ -1,4 +1,4 @@
-# Chicken Horde V6.2.2 3D — Farm Defense
+# Chicken Horde V6.2.3 3D — Farm Defense
 
 Static multiplayer game for GitHub Pages. The host runs the match; phones join as controllers through PeerJS/WebRTC. The game keeps the V5.2 rules and changes the host rendering to real-time 3D.
 
@@ -38,6 +38,11 @@ Static multiplayer game for GitHub Pages. The host runs the match; phones join a
 - `index.html`: host lobby and phone controller; includes the Three.js import map.
 - `app.js`: multiplayer, controls, waves, enemy AI, combat, drops, audio, and scoring.
 - `renderer3d.mjs`: Three.js scene, dynamic camera, model preloader, and game rendering.
+
+## V6.2.3 fixes
+
+- Wolf, snake, and Chupacabras GLB skeletons now play their walk/run animations. Frustum culling is disabled for skinned meshes so stale bind-pose bounds cannot make moving models disappear.
+- Tornado contact damage is fixed at 2 points per hit.
 - `style.css`: responsive host and mobile controller styles.
 - `assets/models/`: GLB, GLTF, OBJ/MTL models and required buffers/textures.
 
