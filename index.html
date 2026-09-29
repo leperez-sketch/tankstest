@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-  <meta name="theme-color" content="#172c2b"><title>Chicken Horde V5.2</title>
+  <meta name="theme-color" content="#172c2b"><title>Chicken Horde V6 3D</title>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"}}</script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main id="host" class="screen hidden">
     <header class="hud"><div class="brand">🐥 CHICKEN HORDE <small>FARM DEFENSE</small></div><div class="stats"><span>WAVE <b id="wave">0</b></span><span>ENEMIES <b id="enemyCount">0</b></span><span>FARM <b id="farmHp">100%</b></span><span>PLAYERS <b id="playerCount">0</b></span></div><button id="soundBtn" class="start sound-toggle">SOUND OFF</button><button id="startBtn" class="start">START GAME</button></header>
     <canvas id="game"></canvas>
-    <section id="lobby" class="lobby"><div class="lobby-card"><div class="eyebrow">ROOM IS OPEN</div><h1>Gather the flock</h1><p>Players can join at any time. The match starts only when you choose.</p><div id="roomCode" class="room-code">Connecting…</div><img id="qr" alt="QR code to join this lobby"><div id="joinUrl" class="join-url"></div><div id="roster" class="roster"></div><div id="assetLoadStatus" class="lobby-note asset-loading">Loading map and character assets…</div><div class="lobby-note">This lobby stays open until you press <b>START GAME</b>.</div><section class="leaderboard"><h2>ALL-TIME HIGH SCORES</h2><div id="lobbyScores"></div><small>Saved in this host browser</small></section></div></section>
+    <section id="lobby" class="lobby"><div class="lobby-card"><div class="eyebrow">ROOM IS OPEN</div><h1>Gather the flock</h1><p>Players can join at any time. The match starts only when you choose.</p><div id="roomCode" class="room-code">Connecting…</div><img id="qr" alt="QR code to join this lobby"><div id="joinUrl" class="join-url"></div><div id="roster" class="roster"></div><div id="assetLoadStatus" class="lobby-note asset-loading">Precargando modelos 3D en el lobby…</div><div class="lobby-note">This lobby stays open until you press <b>START GAME</b>.</div><section class="leaderboard"><h2>ALL-TIME HIGH SCORES</h2><div id="lobbyScores"></div><small>Saved in this host browser</small></section></div></section>
     <section id="gameOver" class="game-over hidden"><div class="game-over-card"><div class="eyebrow">FARM DEFENSE · GAME OVER</div><h1>YOUR MOM IS DEAD</h1><p id="runSummary"></p><h2>PLAYER SCORES</h2><div id="runScores"></div><section class="leaderboard"><h2>ALL-TIME HIGH SCORES</h2><div id="finalScores"></div><small>Saved in this host browser</small></section><button id="playAgain" class="start">PLAY AGAIN</button></div></section>
     <div id="toast" class="toast"></div>
   </main>
