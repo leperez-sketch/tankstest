@@ -127,7 +127,10 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     const bounds = new THREE.Box3().setFromObject(model);
     const size = bounds.getSize(new THREE.Vector3());
     const max = Math.max(size.x, size.y, size.z, 0.00001);
-    model.scale.multiplyScalar(targetHeight / max);
+    let isSkinned = false;
+    model.traverse(node => { if (node.isSkinnedMesh) isSkinned = true; });
+    const skinScaleCorrection = isSkinned ? 0.04 : 1;
+    model.scale.multiplyScalar((targetHeight / max) * skinScaleCorrection);
     model.updateMatrixWorld(true);
     const fitted = new THREE.Box3().setFromObject(model);
     const center = fitted.getCenter(new THREE.Vector3());
@@ -343,7 +346,8 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
   }
 
   function makeEnemy(enemy) {
-    const height = enemy.type === 'BOSS' ? 2.9 : enemy.type === 'EAGLE' ? 1.25 : enemy.type === 'SNAKE' ? 0.75 : Math.max(0.8, enemy.r * 0.085);
+    const heightByType = { BOSS: 2.25, EAGLE: 1.0, SNAKE: 0.62, WOLF: 1.25, FOX: 0.92, MOLE: 0.86, TORNADO: 1.25, ALIEN: 0.95, MAGE: 0.98, GHOST: 1.0, PLANT: 1.15 };
+    const height = heightByType[enemy.type] || 0.95;
     const root = actorFor(enemy.type, height);
     root.traverse(part => { if (part.isMesh) { part.castShadow = false; part.receiveShadow = false; } });
     const health = makeBillboard(enemy.type === 'BOSS' ? 2.55 : 1.25, enemy.type === 'BOSS' ? 0.5 : 0.3);
