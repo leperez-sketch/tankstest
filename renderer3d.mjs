@@ -60,7 +60,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
   let lastFarmValue = -1;
   let lastCountdown = -1;
   let target = new THREE.Vector3(0, 1, 0);
-  let cameraDistance = 27;
+  let cameraDistance = 20.5;
 
   const actorPosition = (x, y, height = 0) => new THREE.Vector3((x - world.home.x) / UNIT, height, (y - world.home.y) / UNIT);
 
@@ -299,12 +299,15 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     g.clearRect(0, 0, c.width, c.height);
     g.fillStyle = '#10251fee';
     g.strokeStyle = player.color;
-    g.lineWidth = 7;
+    g.lineWidth = 8;
     rounded(g, 7, 7, 498, 114, 24); g.fill(); g.stroke();
-    g.fillStyle = player.color; g.beginPath(); g.arc(37, 45, 13, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#fff8de'; g.font = '800 36px Bungee, sans-serif'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(labelText.slice(0, 24), 63, 46);
-    g.fillStyle = '#536252'; rounded(g, 25, 78, 462, 18, 8); g.fill();
-    g.fillStyle = health > 55 ? '#72d77f' : health > 25 ? '#f2c64c' : '#fa6262'; rounded(g, 25, 78, 462 * health / 100, 18, 8); g.fill();
+    g.fillStyle = player.color; g.beginPath(); g.arc(38, 44, 16, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#fff8de'; g.textAlign = 'left'; g.textBaseline = 'middle';
+    let fontSize = 48; g.font = `900 ${fontSize}px Bungee, \"Arial Black\", sans-serif`;
+    while (fontSize > 34 && g.measureText(labelText.slice(0, 24)).width > 414) { fontSize -= 2; g.font = `900 ${fontSize}px Bungee, \"Arial Black\", sans-serif`; }
+    g.fillText(labelText.slice(0, 24), 66, 45);
+    g.fillStyle = '#536252'; rounded(g, 25, 80, 462, 22, 9); g.fill();
+    g.fillStyle = health > 55 ? '#72d77f' : health > 25 ? '#f2c64c' : '#fa6262'; rounded(g, 25, 80, 462 * health / 100, 22, 9); g.fill();
     texture.needsUpdate = true;
     node.lastName = labelText;
     node.lastHealth = health;
@@ -380,7 +383,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     const aura = makePlaneDisc(0.62, color, 0.25); aura.position.y = 0.03; root.add(aura);
     const ring = new THREE.Mesh(new THREE.TorusGeometry(0.57, 0.035, 8, 36), new THREE.MeshBasicMaterial({ color })); ring.rotation.x = Math.PI / 2; ring.position.y = 0.045; root.add(ring);
     const weaponPivot = new THREE.Group(); weaponPivot.position.set(0.28, 0.55, 0.16); weaponPivot.add(makeWeapon()); root.add(weaponPivot);
-    const label = makeBillboard(1.9, 0.48); label.sprite.position.set(0, 1.68, 0); root.add(label.sprite);
+    const label = makeBillboard(3.05, 0.78); label.sprite.position.set(0, 1.82, 0); root.add(label.sprite);
     const shield = new THREE.Mesh(new THREE.SphereGeometry(0.82, 16, 12), new THREE.MeshBasicMaterial({ color: '#76e8ff', wireframe: true, transparent: true, opacity: 0.45 })); shield.position.y = 0.67; shield.visible = false; root.add(shield);
     const angel = new THREE.Group(); angel.visible = false;
     const halo = new THREE.Mesh(new THREE.TorusGeometry(0.23, 0.035, 8, 28), new THREE.MeshBasicMaterial({ color: '#ffe88a', emissive: '#ffe88a' })); halo.position.set(0, 1.75, 0.04); halo.rotation.x = Math.PI / 2; angel.add(halo);
@@ -593,7 +596,7 @@ export function createGameRenderer({ canvas, world, trees, grassTufts, status, s
     }
     let spread = Math.hypot(cx - world.home.x, cy - world.home.y) / UNIT;
     for (const player of living) spread = Math.max(spread, Math.hypot(cx - player.x, cy - player.y) / UNIT);
-    const targetDistance = THREE.MathUtils.clamp(27 + spread * 1.35, 27, 56);
+    const targetDistance = THREE.MathUtils.clamp((27 + spread * 1.35) * 0.76, 20.5, 42.5);
     cameraDistance += (targetDistance - cameraDistance) * Math.min(1, dt * 1.6);
     const desired = actorPosition(cx, cy, 0.8);
     target.lerp(desired, Math.min(1, dt * 2.5));

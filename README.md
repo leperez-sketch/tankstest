@@ -1,4 +1,4 @@
-# Chicken Horde V6.2.4 3D — Farm Defense
+# Chicken Horde V6.2.5 3D — Farm Defense
 
 Static multiplayer game for GitHub Pages. The host runs the match; phones join as controllers through PeerJS/WebRTC. The game keeps the V5.2 rules and changes the host rendering to real-time 3D.
 
@@ -21,7 +21,7 @@ Static multiplayer game for GitHub Pages. The host runs the match; phones join a
 ## Preserved gameplay
 
 - Infinite waves with a 3-second countdown and groups of enemies. Enemy count increases 25% for each player after the first.
-- All enemies, including Chupacabras, use the same speed on every wave. Enemy damage is reduced by 60%. The V6.2.4 update reduces enemy speed by a further 15% from the previous build. Foxes jump, wolves attack in packs, eagles dive, snakes arrive in groups, and the later waves include moles, aliens, mages, ghosts, plants, and tornadoes. Chupacabras appears at wave 5 and rarely as an elite from wave 6 onward, with an eye-fire attack. Mole, tornado, alien, mage, ghost, and plant enemies use visible procedural 3D models, so separate GLB files are optional.
+- All enemies, including Chupacabras, use the same speed on every wave. Enemy damage is reduced by 60%. V6.2.4 reduced enemy speed by a further 15%. Foxes jump, wolves attack in packs, eagles dive, snakes arrive in groups, and the later waves include moles, aliens, mages, ghosts, plants, and tornadoes. Chupacabras appears at wave 5 and rarely as an elite from wave 6 onward, with an eye-fire attack. Mole, tornado, alien, mage, ghost, and plant enemies use visible procedural 3D models, so separate GLB files are optional.
 - Drops use a 10% chance per defeated enemy: shield, occasional medkit, permanent non-stacking double-shot, or permanent non-stacking rapid-fire. Double-shot now makes up 25% of successful power-up drops. Duplicate shot upgrades do not stack. Shield, double-shot, and rapid-fire pickups each play their supplied sound effect when SFX is enabled.
 - At most two tornadoes spawn in a wave. Tornadoes deal 2 damage per contact, grow while aiming toward the henhouse, then dash across the map. Four nearby boulders provide defensive cover and block movement/projectiles. Moles and plants pressure the center.
 - Mama Hen heals 8% after each completed wave. Player movement remains 15% faster; aiming auto-fires rapidly while held.
@@ -39,7 +39,7 @@ Static multiplayer game for GitHub Pages. The host runs the match; phones join a
 - `app.js`: multiplayer, controls, waves, enemy AI, combat, drops, audio, and scoring.
 - `renderer3d.mjs`: Three.js scene, dynamic camera, model preloader, and game rendering.
 
-## V6.2.4 fixes
+## V6.2.5 fixes
 
 - Wolf, snake, and Chupacabras GLB skeletons now play their walk/run animations. Frustum culling is disabled for skinned meshes so stale bind-pose bounds cannot make moving models disappear.
 - Tornado contact damage is fixed at 2 points per hit.
@@ -57,3 +57,7 @@ PeerJS/WebRTC can retry signaling and recover brief dropouts, but browser-only s
 Forest models/texture: Kay Lousberg, KayKit Forest Nature Pack (CC0 1.0). Floor Grass Sliced B: Isa Lousberg. Grass and Shack: Quaternius. Fertile soil: Frank Lynam. Egg and animal models retain their original creator attribution from the supplied files.
 
 - Power-up pickup audio is stored locally in `assets/audio/powerup-shield.mp3`, `powerup-double-shot.mp3`, and `powerup-rapid-fire.mp3` for static GitHub Pages hosting.
+
+## V6.2.5 readability update
+
+- The dynamic camera stays about 24% closer at any player spread. Player nameplates are substantially larger, with larger text and health bars that remain proportionate and auto-fit long names.
